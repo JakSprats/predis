@@ -12,6 +12,8 @@ This Alsosql client is a fork of Predis and is compliant w/ ALL redis commands (
 
 To view Alsosql's functionality look at the library in lib/Alsosql.php
 
+NOTE: PHP 5.2 backport of this version is available here:
+      http://allinram.info/alsosql/Predis_v0.6.1-PHP5.2_ALSOSQL_ENABLED.tgz
 ## Examples ##
 
 - "examples/works.php" which calls "examples/alsosql_example_functions.php", the latter containing MOST Alsosql RDBMS use cases
