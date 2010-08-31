@@ -22,21 +22,11 @@ These simple examples should start to shed light on Alsosql's ease-of-use and th
 
 ## About ##
 
-Predis is a flexible and feature-complete PHP client library for the Redis key-value 
-database. It currently comes in two flavors:
-
- - the mainline client library, which targets PHP 5.3.x and leverages a lot of the 
-   features introduced in this new version of the PHP interpreter.
- - a backport to PHP 5.2.x for those who can not upgrade their environment yet 
-   (it admittedly has a lower priority compared to the mainline library, although we 
-   try to keep the two versions aligned as much as possible).
-
-Please refer to the TODO file to see which issues are still pending and what is due 
-to be implemented soon in Predis.
-
+Predis is a flexible and feature-complete PHP client library for the Redis key-value database and the Alsosql Hybrid Relational-Database/NOSQL-Datastore.
 
 ## Main features ##
 
+- Full Support for Alsosql alpha release
 - Full support for Redis 2.0. Different versions of Redis are supported via server profiles.
 - Client-side sharding (support for consistent hashing and custom distribution strategies).
 - Command pipelining on single and multiple connections (transparent).
@@ -49,14 +39,26 @@ to be implemented soon in Predis.
 See the [official wiki](http://wiki.github.com/nrk/predis) of the project for a more 
 complete coverage of all the features available in Predis.
 
-### Connecting to a local instance of Redis ###
+### Connecting to a local instance of Alsosql and Mysql ###
 
-You don't have to specify a tcp host and port when connecting to Redis instances 
-running on the localhost on the default port:
+You don't have to specify a tcp host and port when connecting to Redis instances running on the localhost on the default port, but you do have to specify the mysql connection:
 
-    $redis = new Predis\Client();
-    $redis->set('library', 'predis');
-    $value = $redis->get('library');
+    $database_connection = array(
+        'host' => '127.0.0.1', 'user' => 'root', 'password' => '', 'name' => 'mydb',
+    );
+    $alsosql = new Palsosql_Client($database_connection);
+    // IN SQL: CREATE TABLE healthplan (id int primary key, name TEXT)
+    $alsosql->createTable("healthplan", "id int primary key, name TEXT");
+    // IN SQL: INSERT INTO healthplan VALUES (1,none)
+    $alsosql->insert("healthplan", "1,none");
+    // IN SQL: INSERT INTO healthplan VALUES (2,kaiser)
+    $alsosql->insert("healthplan", "2, Kaiser Permanente");
+    // IN SQL: SELECT * FROM  healthplan WHERE id = 2
+    $alsosql->select("*", "healthplan", "id = 2");
+
+    // redis commands work w/ alsosql as Palsosql_Client extends Predis\Client()
+    $alsosql->set('library', 'predis');
+    $value = $alsosql->get('library');
 
 
 ### Pipelining multiple commands to a remote instance of Redis ##
@@ -64,17 +66,21 @@ running on the localhost on the default port:
 Pipelining helps with performances when there is the need to issue many commands 
 to a server in one go:
 
-    $redis   = new Predis\Client('redis://10.0.0.1:6379/');
-    $replies = $redis->pipeline(function($pipe) {
+    $alsosql = new Palsosql_Client('redis://10.0.0.1:6379/');
+    $replies = $alsosql->pipeline(function($pipe) {
         $pipe->ping();
         $pipe->incrby('counter', 10);
         $pipe->incrby('counter', 30);
         $pipe->get('counter');
+        $pipe->insert("healthplan", "3, Blue Shield");
+        $pipe->insert("healthplan", "4, Aetna");
+        $pipe->insert("healthplan", "5, Blue Cross");
     });
 
 
 ### Pipelining multiple commands to multiple instances of Redis (sharding) ##
 
+NOTE: this is not yet supported in Alsosql
 Predis supports data sharding using consistent-hashing on keys on the client side. 
 Furthermore, a pipeline can be initialized on a cluster of redis instances in the 
 same exact way they are created on single connection. Sharding is still transparent 
@@ -138,11 +144,12 @@ variable set to E_ALL | E_STRICT.
 ## Links ##
 
 ### Project ###
-- [Source code](http://github.com/nrk/predis/)
-- [Wiki](http://wiki.github.com/nrk/predis/)
-- [Issue tracker](http://github.com/nrk/predis/issues)
+- [Source code](http://github.com/JakSprats/predis/)
+- [Wiki](http://wiki.github.com/JakSprats/predis/)
+- [Issue tracker](http://github.com/JakSprats/predis/issues)
 
 ### Related ###
+- [Alsosql](http://github.com/JakSprats/Alsosql)
 - [Redis](http://code.google.com/p/redis/)
 - [PHP](http://php.net/)
 - [PHPUnit](http://www.phpunit.de/)
@@ -151,6 +158,7 @@ variable set to E_ALL | E_STRICT.
 ## Author ##
 
 [Daniele Alessandri](mailto:suppakilla@gmail.com)
+Alsosql: [Russell Sullivan](mailto:jaksprats@gmail.com)
 
 ## Contributors ##
 
@@ -158,4 +166,4 @@ variable set to E_ALL | E_STRICT.
 
 ## License ##
 
-The code for Predis is distributed under the terms of the MIT license (see LICENSE).
+The code for Predis and "Alsoql on top of Predis" are distributed under the terms of the MIT license (see LICENSE).
