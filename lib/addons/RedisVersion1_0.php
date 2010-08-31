@@ -91,7 +91,10 @@ class RedisServer_v1_0 extends \Predis\RedisServerProfile {
             'srandmember'     => '\Predis\Compatibility\v1_0\Commands\SetRandomMember', 
 
             /* multiple databases handling commands */
-            'select'          => '\Predis\Compatibility\v1_0\Commands\SelectDatabase', 
+            // FOR ALSOSQL
+            'changedb'          => '\Predis\Compatibility\v1_0\Commands\SelectDatabase', 
+            // FOR REDIS
+            //'select'          => '\Predis\Compatibility\v1_0\Commands\SelectDatabase', 
             'move'            => '\Predis\Compatibility\v1_0\Commands\MoveKey', 
             'flushdb'         => '\Predis\Compatibility\v1_0\Commands\FlushDatabase', 
             'flushall'        => '\Predis\Compatibility\v1_0\Commands\FlushAll', 
@@ -343,7 +346,10 @@ class SetRandomMember extends \Predis\InlineCommand {
 /* multiple databases handling commands */
 class SelectDatabase extends \Predis\InlineCommand {
     public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'SELECT'; }
+    // FOR ALSOSQL
+    public function getCommandId() { return 'CHANGEDB'; }
+    // FOR REDIS
+    //public function getCommandId() { return 'SELECT'; }
 }
 
 class MoveKey extends \Predis\InlineCommand {

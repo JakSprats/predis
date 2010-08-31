@@ -1,4 +1,9 @@
 <?php
+
+// NOTE: ALSOSQL takes the command "SELECT" FROM redis
+//       and replaces it with "CHANGEDB"
+//       "SELECT" is used for "SELECT * FROM table"
+
 namespace Predis;
 use Predis\Shared\Utils, Predis\Distribution\IDistributionStrategy;
 
@@ -107,7 +112,10 @@ class Client {
         }
         if ($params->database !== null) {
             $connection->pushInitCommand($this->createCommand(
-                'select', array($params->database)
+                // FOR ALSOSQL
+                'changedb', array($params->database)
+                // FOR REDIS
+                //'select', array($params->database)
             ));
         }
 
@@ -1670,7 +1678,10 @@ class RedisServer_v1_2 extends RedisServerProfile {
             'zremrangebyscore'          => '\Predis\Commands\ZSetRemoveRangeByScore',
 
             /* multiple databases handling commands */
-            'select'                    => '\Predis\Commands\SelectDatabase',
+            // FOR ALSOSQL
+            'changedb'                  => '\Predis\Commands\SelectDatabase',
+            // FOR REDIS
+            //'select'                    => '\Predis\Commands\SelectDatabase',
             'move'                      => '\Predis\Commands\MoveKey',
             'flushdb'                   => '\Predis\Commands\FlushDatabase',
             'flushall'                  => '\Predis\Commands\FlushAll',
@@ -2695,7 +2706,10 @@ class HashGetAll extends Command {
 /* multiple databases handling commands */
 class SelectDatabase extends Command {
     public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'SELECT'; }
+    // FOR ALSOSQL
+    public function getCommandId() { return 'CHANGEDB'; }
+    // FOR REDIS
+    //public function getCommandId() { return 'SELECT'; }
 }
 
 class MoveKey extends Command {
