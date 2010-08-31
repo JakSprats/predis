@@ -12,7 +12,7 @@ This Alsosql client is a fork of Predis and is compliant w/ ALL redis commands (
 
 To view Alsosql's functionality look at the library in lib/Alsosql.php
 
-## Exampled ##
+## Examples ##
 
 - "examples/works.php" which calls "examples/alsosql_example_functions.php", the latter containing MOST Alsosql RDBMS use cases
 - "examples/pop_denorm.php", which denormalises many redis STRINGS into an ALSOSQL table (and then just to display functionality, denormalises said table into a set of redis hash-tables)
@@ -21,9 +21,9 @@ To view Alsosql's functionality look at the library in lib/Alsosql.php
 
 These simple examples should start to shed light on Alsosql's ease-of-use and the flexibility it provides: morph data between different structures at the network level, between Mysql, Alsosql and redis.
 
-## About ##
+## About Predis ##
 
-Predis is a flexible and feature-complete PHP client library for the Redis key-value database and the Alsosql Hybrid Relational-Database/NOSQL-Datastore.
+Predis is a flexible and feature-complete PHP client library for the Redis key-value database and "Alsosql on top of Predis" is a fork that extends Predis to be able to communication with the Alsosql Hybrid Relational-Database/NOSQL-Datastore.
 
 ## Main features ##
 
@@ -82,6 +82,7 @@ to a server in one go:
 ### Pipelining multiple commands to multiple instances of Redis (sharding) ##
 
 NOTE: this is not yet supported in Alsosql
+
 Predis supports data sharding using consistent-hashing on keys on the client side. 
 Furthermore, a pipeline can be initialized on a cluster of redis instances in the 
 same exact way they are created on single connection. Sharding is still transparent 
@@ -158,8 +159,8 @@ variable set to E_ALL | E_STRICT.
 
 ## Author ##
 
-[Daniele Alessandri](mailto:suppakilla@gmail.com)
-Alsosql: [Russell Sullivan](mailto:jaksprats@gmail.com)
+- [Daniele Alessandri](mailto:suppakilla@gmail.com)
+- Alsosql: [Russell Sullivan](mailto:jaksprats@gmail.com)
 
 ## Contributors ##
 
