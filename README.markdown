@@ -13,10 +13,10 @@ This Alsosql client is a fork of Predis and is compliant w/ ALL redis commands (
 To view Alsosql's functionality look at the library in lib/Alsosql.php
 
 View examples:
-1.) "examples/works.php" which calls "examples/alsosql_example_functions.php", the latter containing MOST Alsosql RDBMS use cases
-2.) "examples/pop_denorm.php", which denormalises many redis STRINGS into an ALSOSQL table (and then just to display functionality, denormalises said table into a set of redis hash-tables)
-3.) "examples/backup_redis_to_mysql.php" dumps all redis SETs, LISTs, ZSETs, and HASHes to normalised Mysql tables (in 15 lines of code)
-4.) "examples/tweet/tweet_archiver.php" shows how Alsosql can be used to create a Mysql Cache for a redis Zset (class in file "examples/ZsetCache.php"). This effectively and transparently adds hard-disk capabilities to the InMemory Database redis for rarely accessed (archived) data.
+- 1.) "examples/works.php" which calls "examples/alsosql_example_functions.php", the latter containing MOST Alsosql RDBMS use cases
+- 2.) "examples/pop_denorm.php", which denormalises many redis STRINGS into an ALSOSQL table (and then just to display functionality, denormalises said table into a set of redis hash-tables)
+- 3.) "examples/backup_redis_to_mysql.php" dumps all redis SETs, LISTs, ZSETs, and HASHes to normalised Mysql tables (in 15 lines of code)
+- 4.) "examples/tweet/tweet_archiver.php" shows how Alsosql can be used to create a Mysql Cache for a redis Zset (class in file "examples/ZsetCache.php"). This effectively and transparently adds hard-disk capabilities to the InMemory Database redis for rarely accessed (archived) data.
 
 These simple examples should start to shed light on Alsosql's ease-of-use and the flexibility it provides: morph data between different structures at the network level, between Mysql, Alsosql and redis.
 
