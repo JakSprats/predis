@@ -8,14 +8,18 @@ SQL Tables, SQL Statements and SQL Data-types are supported. Alsosql is built on
 
 Storing Data in NOSQL and/or SQL and converting to and fro can be done w/ a few straightforward SQL-esque commands. Alsosql is optimised for a OLTP workload and is both extremely fast and extremely memory efficient. Alsosql attains its speed by storing ALL of its data in RAM, periodically snapshot-saving the data to disk and by optimising to the SQL statements commonly used in OLTP workloads.
 
-This Alsosql client is a fork of Predis and is compliant w/ redis except Alsosql has usurped the redis command "SELECT" in SQL's name, and replaced it with :CHANGEDB"
+This Alsosql client is a fork of Predis and is compliant w/ ALL redis commands (except Alsosql has usurped the redis command "SELECT" in SQL's name, and replaced it with "CHANGEDB")
 
 To view Alsosql's functionality look at the library in lib/Alsosql.php
-OR the examples (pop_denorm.php or works.php) in the examples/ directory.
 
-Additional examples like "examples/backup_redis_to_mysql.php" dump all redis SETs, LISTs, ZSETs, and HASHes to normalised Mysql tables in 15 lines of code, and the example "examples/tweet/tweet_archiver.php" shows how Alsosql can be used to create a Mysql Cache for a redis Zset (effectively transparently adding hard-disk capabilities to the InMemory Database redis).
+View examples:
+1.) "examples/works.php" which calls "examples/alsosql_example_functions.php", the latter containing MOST Alsosql RDBMS use cases
+2.) "examples/pop_denorm.php", which denormalises many redis STRINGS into an ALSOSQL table (and then just to display functionality, denormalises said table into a set of redis hash-tables)
+3.) "examples/backup_redis_to_mysql.php" dumps all redis SETs, LISTs, ZSETs, and HASHes to normalised Mysql tables (in 15 lines of code)
+4.) "examples/tweet/tweet_archiver.php" shows how Alsosql can be used to create a Mysql Cache for a redis Zset (class in file "examples/ZsetCache.php"). This effectively and transparently adds hard-disk capabilities to the InMemory Database redis for rarely accessed (archived) data.
 
-These simple examples should start to shed a little light on the flexibility that Alsosql provides, providing a dead simple mechanism to morph data between different structures at the distributed network level.
+These simple examples should start to shed light on Alsosql's ease-of-use and the flexibility it provides: morph data between different structures at the network level, between Mysql, Alsosql and redis.
+
 ## About ##
 
 Predis is a flexible and feature-complete PHP client library for the Redis key-value 
