@@ -1,5 +1,10 @@
 <?php
 
+/*
+  REQUIREMENTS: to run this script
+         1.) the database "tweet_archive" must exist
+         2.) the tables defined in "table_definitions.sql" need to exist
+*/
 require_once '../SharedConfigurations.php';
 require_once 'Alsosql.php';
 require_once '../ZsetCache.php';
