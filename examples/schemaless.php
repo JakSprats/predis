@@ -38,4 +38,12 @@ if ($drop) {
 try { $alsosql->importFromMysql($table); } catch (Exception $e) { }
 
 $alsosql->dump($table);
+
+$wildcard = $table . ':*';
+$alsosql->denormalize($table, $wildcard);
+
+echo "HGETALL $table:1<br/>";
+print_r($alsosql->hgetall("$table:1"));
+echo "<br/>";
+
 ?>
