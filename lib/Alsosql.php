@@ -166,7 +166,7 @@ class Palsosql_Client extends Predis\Client {
         return $this->localRawCommand($alsosql_cmd);
     }
 
-    public function dump($table_name, $to_mysql) {
+    public function dump($table_name) {
         if (!isset($table_name)) {
             throw new Predis_ClientException("dump(\"tablename\",0)");
         }
