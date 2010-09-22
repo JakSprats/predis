@@ -1,28 +1,28 @@
-# Alsosql on top of Predis #
+# Predisql #
 
-## Alsosql ##
+## Redisql ##
 
-Alsosql: Is a Hybrid Relational-Database/NOSQL-Datastore.
-Project homepage: [http://code.google.com/p/alsosql/](http://code.google.com/p/alsosql/)
+Redisql: Is a Hybrid Relational-Database/NOSQL-Datastore.
+Project homepage: [http://code.google.com/p/redisql/](http://code.google.com/p/redisql/)
 
-SQL Tables, SQL Statements and SQL Data-types are supported. Alsosql is built on top of the NOSQL datastore redis and supports normalisation/denormalisation of redis data structures (lists,sets,hash-tables) into/from Alsosql tables, as well as import/export of tables to/from Mysql. It is a data storage Swiss army knife.
+SQL Tables, SQL Statements and SQL Data-types are supported. Redisql is built on top of the NOSQL datastore redis and supports normalisation/denormalisation of redis data structures (lists,sets,hash-tables) into/from sql tables, as well as import/export of tables to/from Mysql. It is a data storage Swiss army knife.
 
-Storing Data in NOSQL and/or SQL and converting to and fro can be done w/ a few straightforward SQL-esque commands. Alsosql is optimised for a OLTP workload and is both extremely fast and extremely memory efficient. Alsosql attains its speed by storing ALL of its data in RAM, periodically snapshot-saving the data to disk and by optimising to the SQL statements commonly used in OLTP workloads.
+Storing Data in NOSQL and/or SQL and converting to and fro can be done w/ a few straightforward SQL-esque commands. Redisql is optimised for a OLTP workload and is both extremely fast and extremely memory efficient. Redisql attains its speed by storing ALL of its data in RAM, periodically snapshot-saving the data to disk and by optimising to the SQL statements commonly used in OLTP workloads.
 
-This Alsosql client is a fork of Predis and is compliant w/ ALL redis commands (except Alsosql has usurped the redis command "SELECT" in SQL's name, and replaced it with "CHANGEDB")
+This Redisql client is a fork of Predis and is compliant w/ ALL redis commands (except Redisql has usurped the redis command "SELECT" in SQL's name, and replaced it with "CHANGEDB")
 
-To view Alsosql's functionality look at the library in lib/Alsosql.php
+To view Redisql's functionality look at the library in lib/Alsosql.php
 
 NOTE: PHP 5.2 backport of this version is available here:
       http://allinram.info/alsosql/Predis_v0.6.1-PHP5.2_ALSOSQL_ENABLED.tgz
 ## Examples ##
 
-- "examples/works.php" which calls "examples/alsosql_example_functions.php", the latter containing MOST Alsosql RDBMS use cases
+- "examples/works.php" which calls "examples/alsosql_example_functions.php", the latter containing MOST Redisql RDBMS use cases
 - "examples/pop_denorm.php", which denormalises many redis STRINGS into an ALSOSQL table (and then just to display functionality, denormalises said table into a set of redis hash-tables)
 - "examples/backup_redis_to_mysql.php" dumps all redis SETs, LISTs, ZSETs, and HASHes to normalised Mysql tables (in 15 lines of code)
 - "examples/tweet/tweet_archiver.php" shows how Alsosql can be used to create a Mysql Cache for a redis Zset (class in file "examples/ZsetCache.php"). This effectively and transparently adds hard-disk capabilities to the InMemory Database redis for rarely accessed (archived) data.
 
-These simple examples should start to shed light on Alsosql's ease-of-use and the flexibility it provides: morph data between different structures at the network level, between Mysql, Alsosql and redis.
+These simple examples should start to shed light on Redisql's ease-of-use and the flexibility it provides: morph data between different structures at the network level, between Mysql, Redisql and redis.
 
 ## About Predis ##
 
