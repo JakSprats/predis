@@ -18,19 +18,19 @@ NOTE: PHP 5.2 backport of this version is available here:
 ## Examples ##
 
 - "examples/works.php" which calls "examples/alsosql_example_functions.php", the latter containing MOST Redisql RDBMS use cases
-- "examples/pop_denorm.php", which denormalises many redis STRINGS into an ALSOSQL table (and then just to display functionality, denormalises said table into a set of redis hash-tables)
+- "examples/pop_denorm.php", which denormalises many redis STRINGS into an RediSQL table (and then just to display functionality, denormalises said table into a set of redis hash-tables)
 - "examples/backup_redis_to_mysql.php" dumps all redis SETs, LISTs, ZSETs, and HASHes to normalised Mysql tables (in 15 lines of code)
-- "examples/tweet/tweet_archiver.php" shows how Alsosql can be used to create a Mysql Cache for a redis Zset (class in file "examples/ZsetCache.php"). This effectively and transparently adds hard-disk capabilities to the InMemory Database redis for rarely accessed (archived) data.
+- "examples/tweet/tweet_archiver.php" shows how Redisql can be used to create a Mysql Cache for a redis Zset (class in file "examples/ZsetCache.php"). This effectively and transparently adds hard-disk capabilities to the InMemory Database redis for rarely accessed (archived) data.
 
 These simple examples should start to shed light on Redisql's ease-of-use and the flexibility it provides: morph data between different structures at the network level, between Mysql, Redisql and redis.
 
 ## About Predis ##
 
-Predis is a flexible and feature-complete PHP client library for the Redis key-value database and "Alsosql on top of Predis" is a fork that extends Predis to be able to communication with the Alsosql Hybrid Relational-Database/NOSQL-Datastore.
+Predis is a flexible and feature-complete PHP client library for the Redis key-value database and "Redisql on top of Predis" is a fork that extends Predis to be able to communication with the Redisql Hybrid Relational-Database/NOSQL-Datastore.
 
 ## Main features ##
 
-- Full Support for Alsosql alpha release
+- Full Support for Redisql alpha release
 - Full support for Redis 2.0. Different versions of Redis are supported via server profiles.
 - Client-side sharding (support for consistent hashing and custom distribution strategies).
 - Command pipelining on single and multiple connections (transparent).
@@ -43,7 +43,7 @@ Predis is a flexible and feature-complete PHP client library for the Redis key-v
 See the [official wiki](http://wiki.github.com/nrk/predis) of the project for a more 
 complete coverage of all the features available in Predis.
 
-### Connecting to a local instance of Alsosql and Mysql ###
+### Connecting to a local instance of Redisql and Mysql ###
 
 You don't have to specify a tcp host and port when connecting to Redis instances running on the localhost on the default port, but you do have to specify the mysql connection:
 
@@ -84,7 +84,7 @@ to a server in one go:
 
 ### Pipelining multiple commands to multiple instances of Redis (sharding) ##
 
-NOTE: this is not yet supported in Alsosql
+NOTE: this is not yet supported in Redisql
 
 Predis supports data sharding using consistent-hashing on keys on the client side. 
 Furthermore, a pipeline can be initialized on a cluster of redis instances in the 
@@ -154,7 +154,7 @@ variable set to E_ALL | E_STRICT.
 - [Issue tracker](http://github.com/JakSprats/predis/issues)
 
 ### Related ###
-- [Alsosql](http://github.com/JakSprats/Alsosql)
+- [Redisql](http://github.com/JakSprats/Redisql)
 - [Redis](http://code.google.com/p/redis/)
 - [PHP](http://php.net/)
 - [PHPUnit](http://www.phpunit.de/)
@@ -163,7 +163,7 @@ variable set to E_ALL | E_STRICT.
 ## Author ##
 
 - [Daniele Alessandri](mailto:suppakilla@gmail.com)
-- Alsosql: [Russell Sullivan](mailto:jaksprats@gmail.com)
+- Redisql: [Russell Sullivan](mailto:jaksprats@gmail.com)
 
 ## Contributors ##
 
@@ -171,4 +171,4 @@ variable set to E_ALL | E_STRICT.
 
 ## License ##
 
-The code for Predis and "Alsoql on top of Predis" are distributed under the terms of the MIT license (see LICENSE).
+The code for Predis and "Predisql" are distributed under the terms of the MIT license (see LICENSE).
