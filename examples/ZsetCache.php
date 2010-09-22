@@ -1,16 +1,15 @@
 <?php
 
-require_once 'Predis.php';
-require_once 'Alsosql.php';
+require_once 'Predisql.php';
 
 class Zset_Cache {
-    public function __construct($alsosql,
+    public function __construct($redisql,
                                 $parameters = null,
                                 $clientOptions = null) {
-        if (empty($alsosql)) {
-            throw new Predis_ClientException("alsosql missing in constructor");
+        if (empty($redisql)) {
+            throw new Predis_ClientException("redisql missing in constructor");
         }
-        $this->alsosql = $alsosql;
+        $this->redisql = $redisql;
     }
 
     public function zrange($z_name, $user_id, $start, $finish, $more_args) {
@@ -21,9 +20,9 @@ class Zset_Cache {
         $res_second;
         if ($case == 1 || $case == 3) {
             if (empty($more_args)) {
-                $res_first = $this->alsosql->zrange($z_obj, $start, $finish);
+                $res_first = $this->redisql->zrange($z_obj, $start, $finish);
             } else {
-                $res_first = $this->alsosql->zrange($z_obj, $start, $finish,
+                $res_first = $this->redisql->zrange($z_obj, $start, $finish,
                                                     $more_args);
             }
             if ($case == 1) { return $res_first; }
@@ -43,18 +42,18 @@ class Zset_Cache {
         $mysql_archive_table = $z_name . "_archive";
         $temp_mysql_table    = "user_" . gmdate("M_d_Y", time());
 
-        // create Alsosql table from redis command:
+        // create Redisql table from redis command:
         //  "zrangebyscore ZSET yesterday two_days_ago WITHSCORES"
-        $this->alsosql->createTableAs($temp_mysql_table, $z_obj,
+        $this->redisql->createTableAs($temp_mysql_table, $z_obj,
                                       "zrangebyscore",
                                       "$two_days_ago $yesterday WITHSCORES");
 
-        // dump Alsosql table to Mysql table-dump (of same name)
-        $mysql_commands = $this->alsosql->dumpToMysql($temp_mysql_table,
+        // dump Redisql table to Mysql table-dump (of same name)
+        $mysql_commands = $this->redisql->dumpToMysql($temp_mysql_table,
                                                       $temp_mysql_table);
 
-        // drop Alsosql table (no longer needed)
-        $this->alsosql->dropTable($temp_mysql_table);
+        // drop Redisql table (no longer needed)
+        $this->redisql->dropTable($temp_mysql_table);
         
         $meta_command = " INSERT INTO zset_archive_meta " .
                         "(name, most_recent, least_recent) VALUES " .
@@ -62,7 +61,7 @@ class Zset_Cache {
                         "          FROM_UNIXTIME($i_two_days_ago)) " .
                         "ON DUPLICATE KEY " .
                         "  UPDATE most_recent = FROM_UNIXTIME($i_yesterday);";
-        $this->alsosql->m_query($meta_command);
+        $this->redisql->m_query($meta_command);
         
         // data can be converted from one type to another (e.g. text to date)
         $archive_command = "INSERT INTO $mysql_archive_table " . 
@@ -70,16 +69,16 @@ class Zset_Cache {
                            "SELECT $user_id, FROM_UNIXTIME(a.value), b.value " .
                            "FROM $temp_mysql_table a, $temp_mysql_table b " .
                            "WHERE a.pk = b.pk +1 and a.pk % 2 = 0;";
-        $this->alsosql->m_query($archive_command);
+        $this->redisql->m_query($archive_command);
         
         $drop_temp_table_command = "drop table $temp_mysql_table;";
-        $this->alsosql->m_query($drop_temp_table_command);
+        $this->redisql->m_query($drop_temp_table_command);
     }
 
     // PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE
     // PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE
 
-    private $alsosql;
+    private $redisql;
     private function get_zset_most_recent_archive_date() {
         // do NOT get this from the DATABASE - performance hit
         return intval(gettimeofday(true) - 86400); // yesterday
@@ -114,7 +113,7 @@ class Zset_Cache {
         }
         $q .= " ORDER BY score";
         $ret = Array();
-        $result = $this->alsosql->m_query($q);
+        $result = $this->redisql->m_query($q);
         while ($row = mysql_fetch_assoc($result)) {
             $ret[] = $row[$z_name];
         }

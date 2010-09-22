@@ -1,6 +1,6 @@
 <?
 require_once 'SharedConfigurations.php';
-require_once 'Alsosql.php';
+require_once 'Predisql.php';
 
 /*
 Requirements: 
@@ -13,15 +13,15 @@ Requirements:
 Then ....
   call this script w/ the following URL variables
     "?table=employee_data"
-  To call this repeatedly (and each time dropping the Alsosql table, use:
+  To call this repeatedly (and each time dropping the Redisql table, use:
     "?table=employee_data&drop=1"
 */
 
 $database_connection['name'] = "test"; // Mysql DatabaseName
-$alsosql = new Palsosql_Client($database_connection, $single_server, NULL);
-$alsosql->echo_command       = 1;
-$alsosql->echo_response      = 1;
-$alsosql->mysql_echo_command = 1;
+$redisql = new Predisql_Client($database_connection, $single_server, NULL);
+$redisql->echo_command       = 1;
+$redisql->echo_response      = 1;
+$redisql->mysql_echo_command = 1;
 
 $table  = @$_GET['table'];
 if (!$table) {
@@ -32,18 +32,18 @@ if (!$table) {
 $drop  = @$_GET['drop'];
 
 if ($drop) {
-    try {$alsosql->dropTable($table); } catch (Exception $e) { }
+    try {$redisql->dropTable($table); } catch (Exception $e) { }
 }
 
-try { $alsosql->importFromMysql($table); } catch (Exception $e) { }
+try { $redisql->importFromMysql($table); } catch (Exception $e) { }
 
-$alsosql->dump($table);
+$redisql->dump($table);
 
 $wildcard = $table . ':*';
-$alsosql->denormalize($table, $wildcard);
+$redisql->denormalize($table, $wildcard);
 
 echo "HGETALL $table:1<br/>";
-print_r($alsosql->hgetall("$table:1"));
+print_r($redisql->hgetall("$table:1"));
 echo "<br/>";
 
 ?>

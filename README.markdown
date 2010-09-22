@@ -11,13 +11,13 @@ Storing Data in NOSQL and/or SQL and converting to and fro can be done w/ a few 
 
 This Redisql client is a fork of Predis and is compliant w/ ALL redis commands (except Redisql has usurped the redis command "SELECT" in SQL's name, and replaced it with "CHANGEDB")
 
-To view Redisql's functionality look at the library in lib/Alsosql.php
+To view Redisql's functionality look at the library in lib/Predisql.php
 
 NOTE: PHP 5.2 backport of this version is available here:
       http://allinram.info/alsosql/Predis_v0.6.1-PHP5.2_ALSOSQL_ENABLED.tgz
 ## Examples ##
 
-- "examples/works.php" which calls "examples/alsosql_example_functions.php", the latter containing MOST Redisql RDBMS use cases
+- "examples/works.php" which calls "examples/redisql_example_functions.php", the latter containing MOST Redisql RDBMS use cases
 - "examples/pop_denorm.php", which denormalises many redis STRINGS into an RediSQL table (and then just to display functionality, denormalises said table into a set of redis hash-tables)
 - "examples/backup_redis_to_mysql.php" dumps all redis SETs, LISTs, ZSETs, and HASHes to normalised Mysql tables (in 15 lines of code)
 - "examples/tweet/tweet_archiver.php" shows how Redisql can be used to create a Mysql Cache for a redis Zset (class in file "examples/ZsetCache.php"). This effectively and transparently adds hard-disk capabilities to the InMemory Database redis for rarely accessed (archived) data.

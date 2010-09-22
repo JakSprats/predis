@@ -2,7 +2,7 @@
 
 require_once 'Predis.php';
 
-class Palsosql_Client extends Predis\Client {
+class Predisql_Client extends Predis\Client {
 
     public function __construct($db_conn       = null,
                                 $parameters    = null,
@@ -19,8 +19,8 @@ class Palsosql_Client extends Predis\Client {
         $this->m_close();
     }
 
-    public $echo_command;  /* echo the Alsosql commands to the server */
-    public $echo_response; /* echo the Alsosql responses from the server */
+    public $echo_command;  /* echo the Redisql commands to the server */
+    public $echo_response; /* echo the Redisql responses from the server */
 
     // API API API API API API API API API API API API API API API API API
     // API API API API API API API API API API API API API API API API API
@@ -35,13 +35,13 @@ class Palsosql_Client extends Predis\Client {
                                    "SQL \"CREATE TABLE\" Column definitions " .
                                    "syntax error ($column_definitions)");
         }
-        $alsosql_cmd  = "CREATE TABLE $table_name ($column_definitions)\r\n";
-        return $this->localRawCommand($alsosql_cmd);
+        $redisql_cmd  = "CREATE TABLE $table_name ($column_definitions)\r\n";
+        return $this->localRawCommand($redisql_cmd);
     }
 
     public function createTableFromRedisObject($table_name, $redis_obj) {
-        $alsosql_cmd  = "CREATE TABLE $table_name AS DUMP $redis_obj\r\n";
-        return $this->localRawCommand($alsosql_cmd);
+        $redisql_cmd  = "CREATE TABLE $table_name AS DUMP $redis_obj\r\n";
+        return $this->localRawCommand($redisql_cmd);
     }
 
     public function createTableAs($table_name,
@@ -57,17 +57,17 @@ class Palsosql_Client extends Predis\Client {
             throw new Predis_ClientException("createTableFromRedisObject() " .
                                              "should be used for DUMPs");
         }
-        $alsosql_cmd  = "CREATE TABLE $table_name AS " .
+        $redisql_cmd  = "CREATE TABLE $table_name AS " .
                         "$redis_command $redis_obj $redis_args\r\n";
-        return $this->localRawCommand($alsosql_cmd);
+        return $this->localRawCommand($redisql_cmd);
     }
 
     public function dropTable($table_name) {
         if (!isset($table_name)) {
             throw new Predis_ClientException("dropTable(\"tablename\")");
         }
-        $alsosql_cmd  = "DROP TABLE $table_name\r\n";
-        return $this->localRawCommand($alsosql_cmd);
+        $redisql_cmd  = "DROP TABLE $table_name\r\n";
+        return $this->localRawCommand($redisql_cmd);
     }
 
     public function createIndex($index_name, $indexed_column) {
@@ -81,16 +81,16 @@ class Palsosql_Client extends Predis\Client {
                                    "SQL \"CREATE INDEX\" Indexed Column " .
                                    "syntax error ($column_definitions)");
         }
-        $alsosql_cmd  = "CREATE INDEX $index_name ON ($indexed_column)\r\n";
-        return $this->localRawCommand($alsosql_cmd);
+        $redisql_cmd  = "CREATE INDEX $index_name ON ($indexed_column)\r\n";
+        return $this->localRawCommand($redisql_cmd);
     }
 
     public function dropIndex($table_name) {
         if (!isset($table_name)) {
             throw new Predis_ClientException("dropIndex(\"tablename\")");
         }
-        $alsosql_cmd  = "DROP INDEX $table_name\r\n";
-        return $this->localRawCommand($alsosql_cmd);
+        $redisql_cmd  = "DROP INDEX $table_name\r\n";
+        return $this->localRawCommand($redisql_cmd);
     }
 
     public function insert($table_name, $values_list) {
@@ -106,8 +106,8 @@ class Palsosql_Client extends Predis\Client {
             throw new Predis_ClientException("delete(\"indexname\"," .
                                              "\"id = 27\")");
         }
-        $alsosql_cmd  = "DELETE FROM $table_name WHERE $where_clause\r\n";
-        return $this->localRawCommand($alsosql_cmd);
+        $redisql_cmd  = "DELETE FROM $table_name WHERE $where_clause\r\n";
+        return $this->localRawCommand($redisql_cmd);
     }
 
     public function update($table_name, $update_list, $where_clause) {
@@ -140,9 +140,9 @@ class Palsosql_Client extends Predis\Client {
             throw new Predis_ClientException("scanSelect(\"col1,col2,etc...\",".
                                              "\"tablename\",\"name = bill\")");
         }
-        $alsosql_cmd = "SCANSELECT $column_list FROM $table_name " .
+        $redisql_cmd = "SCANSELECT $column_list FROM $table_name " .
                        "WHERE $where_clause\r\n";
-        return $this->localRawCommand($alsosql_cmd);
+        return $this->localRawCommand($redisql_cmd);
     }
 
     public function select($column_list, $table_name, $where_clause) {
@@ -162,26 +162,26 @@ class Palsosql_Client extends Predis\Client {
         if (!isset($table_name)) {
             throw new Predis_ClientException("desc(\"tablename\")");
         }
-        $alsosql_cmd  = "DESC $table_name\r\n";
-        return $this->localRawCommand($alsosql_cmd);
+        $redisql_cmd  = "DESC $table_name\r\n";
+        return $this->localRawCommand($redisql_cmd);
     }
 
     public function dump($table_name) {
         if (!isset($table_name)) {
             throw new Predis_ClientException("dump(\"tablename\",0)");
         }
-        $alsosql_cmd = "DUMP $table_name\r\n";
-        return $this->localRawCommand($alsosql_cmd);
+        $redisql_cmd = "DUMP $table_name\r\n";
+        return $this->localRawCommand($redisql_cmd);
     }
 
     public function dumpToMysql($table_name, $mysql_table_name) {
         if (!isset($table_name, $mysql_table_name)) {
             throw new Predis_ClientException("dump(\"tablename\",0)");
         }
-        $alsosql_cmd  = "DUMP $table_name TO MYSQL $mysql_table_name\r\n";
-        $mysql_commands = $this->localRawCommand($alsosql_cmd);
+        $redisql_cmd  = "DUMP $table_name TO MYSQL $mysql_table_name\r\n";
+        $mysql_commands = $this->localRawCommand($redisql_cmd);
 
-        // put the Alsosql results DIRECTLY into mysql
+        // put the Redisql results DIRECTLY into mysql
         foreach($mysql_commands as $command){
             $this->m_query($command);
         }
@@ -192,8 +192,8 @@ class Palsosql_Client extends Predis\Client {
             throw new Predis_ClientException("normalize(\"tablename\"," .
                                              "\"user\",\"address,payment\")");
         }
-        $alsosql_cmd  = "NORM $main_wildcard $secondary_wildcard_list\r\n";
-        return $this->localRawCommand($alsosql_cmd);
+        $redisql_cmd  = "NORM $main_wildcard $secondary_wildcard_list\r\n";
+        return $this->localRawCommand($redisql_cmd);
     }
 
     public function denormalize($table_name, $main_wildcard) {
@@ -201,8 +201,8 @@ class Palsosql_Client extends Predis\Client {
             throw new Predis_ClientException("denormalize(\"tablename\"," .
                                              "\"user:*:payment\")");
         }
-        $alsosql_cmd  = "DENORM $table_name $main_wildcard\r\n";
-        return $this->localRawCommand($alsosql_cmd);
+        $redisql_cmd  = "DENORM $table_name $main_wildcard\r\n";
+        return $this->localRawCommand($redisql_cmd);
     }
 
     public function importFromMysql($table) {
@@ -217,7 +217,7 @@ class Palsosql_Client extends Predis\Client {
                 $col_def    .= ", ";
                 $col_select .= ", ";
             }
-            // convert Mysql DATETIME & TIMESTAMP to Alsosql INT
+            // convert Mysql DATETIME & TIMESTAMP to Redisql INT
             if (!strcasecmp($row['Type'], "datetime") ||
                 !strcasecmp($row['Type'], "timestamp")) {
                 $tbl_has_date_col  = 1;
@@ -231,7 +231,7 @@ class Palsosql_Client extends Predis\Client {
         }
         $this->m_free_result($result);
         // TODO check "$col_select" for SQL KEYWORDS
-        //       if so converting mysql dates to alsosql ints results
+        //       if so converting mysql dates to redisql ints results
         //       in errors during the "SELECT col,,,,," step
         // NOTE: technically Mysql should disallow keywords as column-names
         $this->createTable($table, $col_def);
@@ -249,7 +249,7 @@ class Palsosql_Client extends Predis\Client {
                     if ($j) {
                         $values_list .= ",";
                     }
-                    /* need to escape strings for Alsosql INSERTs */
+                    /* need to escape strings for Redisql INSERTs */
                     $values_list .= str_replace(",", "\\,", $row[$j]);
                 }
                 try { /* individual inserts can fail for many reasons */
@@ -325,9 +325,9 @@ class Palsosql_Client extends Predis\Client {
         }
 
         if (empty($redis_command)) { // normal SELECT
-            $alsosql_cmd  = "SELECT $column_list FROM $table_name " .
+            $redisql_cmd  = "SELECT $column_list FROM $table_name " .
                             "WHERE $where_clause\r\n";
-            return $this->localRawCommand($alsosql_cmd);
+            return $this->localRawCommand($redisql_cmd);
         } else { // SELECT ... STORE
             if (!isset($redis_name)) {
                 throw new Predis_ClientException(
@@ -335,7 +335,7 @@ class Palsosql_Client extends Predis\Client {
                                   "\"tablename\",\"name = bill\"," .
                                   "\"HSET\",\"new_hash_table\")");
             }
-            // check alsosql_cmd against possible write commands
+            // check redisql_cmd against possible write commands
             if (!in_array($redis_command, $this->storageCommands)) {
                 $adtl_info = "";
                 foreach ($this->storageCommands as $value) {
@@ -347,24 +347,24 @@ class Palsosql_Client extends Predis\Client {
                                   "try ($adtl_info)");
             }
 
-            $alsosql_cmd  = "SELECT $column_list FROM $table_name " .
+            $redisql_cmd  = "SELECT $column_list FROM $table_name " .
                             "WHERE $where_clause " .
                             "STORE $redis_command $redis_name\r\n";
-            return $this->localRawCommand($alsosql_cmd);
+            return $this->localRawCommand($redisql_cmd);
         }
     }
 
-    private function localRawCommand($alsosql_cmd) {
+    private function localRawCommand($redisql_cmd) {
         if ($this->echo_command) {
-            echo "ALSOSQL COMMAND: " . $alsosql_cmd . "</br>";
+            echo "ALSOSQL COMMAND: " . $redisql_cmd . "</br>";
         }
         if ($this->echo_response) {
-            $reply = $this->rawCommand($alsosql_cmd);
+            $reply = $this->rawCommand($redisql_cmd);
             print_r($reply);
             echo "<br>";
             return $reply;
         } else {
-            return $this->rawCommand($alsosql_cmd);
+            return $this->rawCommand($redisql_cmd);
         }
     }
 

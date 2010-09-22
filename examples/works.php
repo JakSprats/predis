@@ -1,16 +1,16 @@
 <?php
 
 require_once 'SharedConfigurations.php';
-require_once 'Alsosql.php';
+require_once 'Predisql.php';
 
-$alsosql = new Palsosql_Client($database_connection, $single_server);
-$alsosql->echo_command  = 1;
-$alsosql->echo_response = 1;
+$redisql = new Predisql_Client($database_connection, $single_server);
+$redisql->echo_command  = 1;
+$redisql->echo_response = 1;
 
-require_once 'alsosql_example_functions.php';
+require_once 'redisql_example_functions.php';
 
-works($alsosql);
+works($redisql);
 
-//jstore_worker_location_table($alsosql);
-//jstore_worker_location_hash($alsosql);
+//jstore_worker_location_table($redisql);
+//jstore_worker_location_hash($redisql);
 ?>
