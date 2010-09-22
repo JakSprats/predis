@@ -50,19 +50,19 @@ You don't have to specify a tcp host and port when connecting to Redis instances
     $database_connection = array(
         'host' => '127.0.0.1', 'user' => 'root', 'password' => '', 'name' => 'mydb',
     );
-    $alsosql = new Palsosql_Client($database_connection);
+    $redisql = new Predisql_Client($database_connection);
     // IN SQL: CREATE TABLE healthplan (id int primary key, name TEXT)
-    $alsosql->createTable("healthplan", "id int primary key, name TEXT");
+    $redisql->createTable("healthplan", "id int primary key, name TEXT");
     // IN SQL: INSERT INTO healthplan VALUES (1,none)
-    $alsosql->insert("healthplan", "1,none");
+    $redisql->insert("healthplan", "1,none");
     // IN SQL: INSERT INTO healthplan VALUES (2,kaiser)
-    $alsosql->insert("healthplan", "2, Kaiser Permanente");
+    $redisql->insert("healthplan", "2, Kaiser Permanente");
     // IN SQL: SELECT * FROM  healthplan WHERE id = 2
-    $alsosql->select("*", "healthplan", "id = 2");
+    $redisql->select("*", "healthplan", "id = 2");
 
-    // redis commands work w/ alsosql as Palsosql_Client extends Predis\Client()
-    $alsosql->set('library', 'predis');
-    $value = $alsosql->get('library');
+    // redis commands work w/ redisql as Predisql_Client extends Predis\Client()
+    $redisql->set('library', 'predis');
+    $value = $redisql->get('library');
 
 
 ### Pipelining multiple commands to a remote instance of Redis ##
@@ -70,8 +70,8 @@ You don't have to specify a tcp host and port when connecting to Redis instances
 Pipelining helps with performances when there is the need to issue many commands 
 to a server in one go:
 
-    $alsosql = new Palsosql_Client('redis://10.0.0.1:6379/');
-    $replies = $alsosql->pipeline(function($pipe) {
+    $redisql = new Predisql_Client('redis://10.0.0.1:6379/');
+    $replies = $redisql->pipeline(function($pipe) {
         $pipe->ping();
         $pipe->incrby('counter', 10);
         $pipe->incrby('counter', 30);
