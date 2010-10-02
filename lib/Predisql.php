@@ -70,18 +70,12 @@ class Predisql_Client extends Predis\Client {
         return $this->localRawCommand($redisql_cmd);
     }
 
-    public function createIndex($index_name, $indexed_column) {
-        if (!isset($index_name, $indexed_column)) {
+    public function createIndex($index_name, $table_name, $column) {
+        if (!isset($index_name, $table_name, $column)) {
             throw new Predis_ClientException("createIndex(\"indexname\"," .
-                                             "\"tablename.columname\")");
+                                             "\"tablename\",\"columname\")");
         }
-        $period = strchr($indexed_column, '.');
-        if (!$period) {
-            throw new Predis_ClientException(
-                                   "SQL \"CREATE INDEX\" Indexed Column " .
-                                   "syntax error ($column_definitions)");
-        }
-        $redisql_cmd  = "CREATE INDEX $index_name ON ($indexed_column)\r\n";
+        $redisql_cmd  = "CREATE INDEX $index_name ON $table_name ($column)\r\n";
         return $this->localRawCommand($redisql_cmd);
     }
 

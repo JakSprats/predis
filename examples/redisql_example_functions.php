@@ -4,34 +4,34 @@ require_once 'Predisql.php';
 
 function init_external($redisql) {
   $redisql->createTable("external", "id int primary key, division int, health int, salary TEXT, name TEXT");
-  $redisql->createIndex("external:division:index", "external.division");
-  $redisql->createIndex("external:health:index  ", "external.health");
+  $redisql->createIndex("external:division:index", "external", "division");
+  $redisql->createIndex("external:health:index  ", "external", "health");
 }
 function init_healthplan($redisql) {
   $redisql->createTable("healthplan", "id int primary key, name TEXT");
 }
 function init_division($redisql) {
   $redisql->createTable("division", "id int primary key, name TEXT, location TEXT");
-  $redisql->createIndex("division:name:index", "division.name");
+  $redisql->createIndex("division:name:index", "division", "name");
 }
 function init_subdivision($redisql) {
   $redisql->createTable("subdivision", "id int primary key, division int, name TEXT");
-  $redisql->createIndex("subdivision:division:index", "subdivision.division");
+  $redisql->createIndex("subdivision:division:index", "subdivision", "division");
 }
 function init_employee($redisql) {
   $redisql->createTable("employee", "id int primary key, division int, salary TEXT, name TEXT");
-  $redisql->createIndex("employee:name:index", "employee.name");
-  $redisql->createIndex("employee:division:index", "employee.division");
+  $redisql->createIndex("employee:name:index", "employee", "name");
+  $redisql->createIndex("employee:division:index", "employee", "division");
 }
 function init_customer($redisql) {
   $redisql->createTable("customer", "id int primary key, employee int, name TEXT, hobby TEXT");
-  $redisql->createIndex("customer:employee:index", "customer.employee");
-  $redisql->createIndex("customer:hobby:index   ", "customer.hobby");
+  $redisql->createIndex("customer:employee:index", "customer", "employee");
+  $redisql->createIndex("customer:hobby:index   ", "customer", "hobby");
 }
 function init_worker($redisql) {
   $redisql->createTable("worker", "id int primary key, division int, health int, salary TEXT, name TEXT");
-  $redisql->createIndex("worker:division:index", "worker.division");
-  $redisql->createIndex("worker:health:index  ", "worker.health");
+  $redisql->createIndex("worker:division:index", "worker", "division");
+  $redisql->createIndex("worker:health:index  ", "worker", "health");
 }
 
 function insert_external($redisql) {
