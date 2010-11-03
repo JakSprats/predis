@@ -199,6 +199,14 @@ class Predisql_Client extends Predis\Client {
         return $this->localRawCommand($redisql_cmd);
     }
 
+    public function lua($command) {
+        if (!isset($command)) {
+            throw new Predis_ClientException("lua(\"command\")";
+        }
+        $redisql_cmd  = "LUA $command\r\n";
+        return $this->localRawCommand($redisql_cmd);
+    }
+
     public function importFromMysql($table) {
         $col_select = "";
         $col_def    = "";
