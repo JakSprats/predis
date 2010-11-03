@@ -201,7 +201,7 @@ class Predisql_Client extends Predis\Client {
 
     public function lua($command) {
         if (!isset($command)) {
-            throw new Predis_ClientException("lua(\"command\")";
+            throw new Predis_ClientException("lua(\"command\")");
         }
         $redisql_cmd  = "LUA $command\r\n";
         return $this->localRawCommand($redisql_cmd);
