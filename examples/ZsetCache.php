@@ -44,9 +44,8 @@ class Zset_Cache {
 
         // create Redisql table from redis command:
         //  "zrangebyscore ZSET yesterday two_days_ago WITHSCORES"
-        $this->redisql->createTableAs($temp_mysql_table, $z_obj,
-                                      "zrangebyscore",
-                                      "$two_days_ago $yesterday WITHSCORES");
+        $this->redisql->createTableAsRedisCommand($temp_mysql_table,
+            "zrangebyscore " . $z_obj . " $two_days_ago $yesterday WITHSCORES");
 
         // dump Redisql table to Mysql table-dump (of same name)
         $mysql_commands = $this->redisql->dumpToMysql($temp_mysql_table,

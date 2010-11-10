@@ -1,4 +1,4 @@
-<?
+<?php
 require_once 'SharedConfigurations.php';
 require_once 'Predisql.php';
 

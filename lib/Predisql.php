@@ -12,7 +12,6 @@ class Predisql_Client extends Predis\Client {
         $this->echo_command       = 0;
         $this->echo_response      = 0;
         $this->mysql_echo_command = 0;
-        $this->initStorageCommands();
     }
 
     public function __destruct() {
@@ -26,45 +25,41 @@ class Predisql_Client extends Predis\Client {
     // API API API API API API API API API API API API API API API API API
     public function createTable($table_name, $column_definitions) {
         if (!isset($table_name, $column_definitions)) {
-            throw new Predis_ClientException("createTable(\"tablename\"," .
+            throw new Predis\ClientException("createTable(\"tablename\"," .
                                              "\"id INT, name TEXT, etc....\")");
         }
         $comma = strchr($column_definitions, ',');
         if (!$comma) {
-            throw new Predis_ClientException(
+            throw new Predis\ClientException(
                                    "SQL \"CREATE TABLE\" Column definitions " .
                                    "syntax error ($column_definitions)");
         }
-        $redisql_cmd  = "CREATE TABLE $table_name ($column_definitions)\r\n";
-        return $this->localRawCommand($redisql_cmd);
+        $cdefs_w_paren = "($column_definitions)";
+        return $this->_cr8_tbl($table_name, $cdefs_w_paren);
     }
 
     public function createTableFromRedisObject($table_name, $redis_obj) {
-        $redisql_cmd  = "CREATE TABLE $table_name AS DUMP $redis_obj\r\n";
-        return $this->localRawCommand($redisql_cmd);
+        if (!isset($table_name, $redis_obj)) {
+            throw new Predis\ClientException("createTableAsRedisObject(" .
+                                             "\"tablename\",\"redis_obj\")");
+        }
+        $cdefs  = "AS DUMP $redis_obj";
+        return $this->_cr8_tbl($table_name, $cdefs);
     }
 
-    public function createTableAs($table_name,
-                                  $redis_obj,
-                                  $redis_command,
-                                  $redis_args) {
-        if (!isset($table_name, $redis_obj, $redis_command, $redis_args)) {
-            throw new Predis_ClientException("createTableAs(\"tablename\"," .
-                                             "\"redis_obj\",\"redis_command\"" .
-                                             "\"redis_args\")");
+    public function createTableAsRedisCommand($table_name,
+                                              $redis_command) {
+        if (!isset($table_name, $redis_command)) {
+            throw new Predis\ClientException("createTableAsRedisCommand(" .
+                                             "\"tablename\",\"redis_cmd\")");
         }
-        if ($redis_command == "DUMP") {
-            throw new Predis_ClientException("createTableFromRedisObject() " .
-                                             "should be used for DUMPs");
-        }
-        $redisql_cmd  = "CREATE TABLE $table_name AS " .
-                        "$redis_command $redis_obj $redis_args\r\n";
-        return $this->localRawCommand($redisql_cmd);
+        $cdefs = "AS " .  "$redis_command";
+        return $this->_cr8_tbl($table_name, $cdefs);
     }
 
     public function dropTable($table_name) {
         if (!isset($table_name)) {
-            throw new Predis_ClientException("dropTable(\"tablename\")");
+            throw new Predis\ClientException("dropTable(\"tablename\")");
         }
         $redisql_cmd  = "DROP TABLE $table_name\r\n";
         return $this->localRawCommand($redisql_cmd);
@@ -72,7 +67,7 @@ class Predisql_Client extends Predis\Client {
 
     public function createIndex($index_name, $table_name, $column) {
         if (!isset($index_name, $table_name, $column)) {
-            throw new Predis_ClientException("createIndex(\"indexname\"," .
+            throw new Predis\ClientException("createIndex(\"indexname\"," .
                                              "\"tablename\",\"columname\")");
         }
         $redisql_cmd  = "CREATE INDEX $index_name ON $table_name ($column)\r\n";
@@ -81,7 +76,7 @@ class Predisql_Client extends Predis\Client {
 
     public function dropIndex($table_name) {
         if (!isset($table_name)) {
-            throw new Predis_ClientException("dropIndex(\"tablename\")");
+            throw new Predis\ClientException("dropIndex(\"tablename\")");
         }
         $redisql_cmd  = "DROP INDEX $table_name\r\n";
         return $this->localRawCommand($redisql_cmd);
@@ -95,52 +90,57 @@ class Predisql_Client extends Predis\Client {
         $this->_insert($table_name, $values_list, 1);
     }
 
+
     public function delete($table_name, $where_clause) {
         if (!isset($table_name, $where_clause)) {
-            throw new Predis_ClientException("delete(\"indexname\"," .
+            throw new Predis\ClientException("delete(\"indexname\"," .
                                              "\"id = 27\")");
         }
-        $redisql_cmd  = "DELETE FROM $table_name WHERE $where_clause\r\n";
+        $cmd  = "*5\r\n";
+        $cmd .= "$6\r\nDELETE\r\n";
+        $cmd .= "$4\r\nFROM\r\n";
+        $cmd .= "$" . strlen($table_name)   . "\r\n" . $table_name . "\r\n";
+        $cmd .= "$5\r\nWHERE\r\n";
+        $cmd .= "$" . strlen($where_clause) . "\r\n" . $where_clause . "\r\n";
+        return $this->localRawCommand($cmd);
+
+        $redisql_cmd = _add_wc("DELETE FROM $table_name", $where_clause);
         return $this->localRawCommand($redisql_cmd);
     }
 
     public function update($table_name, $update_list, $where_clause) {
         if (!isset($table_name, $update_list, $where_clause)) {
-            throw new Predis_ClientException("update(\"tablename\"," .
+            throw new Predis\ClientException("update(\"tablename\"," .
                                              "\"col1=val1,col2=val2,etc...\"," .
                                              "\"id = 27\")");
         }
-        $words_in_where = substr_count($where_clause, ' ');
-        $command_count  = $words_in_where + 6;
-        $cmd  = "*" . $command_count ."\r\n$6\r\nUPDATE\r\n";
-        $cmd .= "$" . strlen($table_name) . "\r\n";
-        $cmd .= $table_name . "\r\n";
+        $cmd  = "*6\r\n";
+        $cmd .= "$6\r\nUPDATE\r\n";
+        $cmd .= "$" . strlen($table_name)   . "\r\n" . $table_name . "\r\n";
         $cmd .= "$3\r\nSET\r\n";
-        $cmd .= "$" . strlen($update_list) . "\r\n";
-        $cmd .= $update_list . "\r\n";
+        $cmd .= "$" . strlen($update_list)  . "\r\n" . $update_list . "\r\n";
         $cmd .= "$5\r\nWHERE\r\n";
-
-        $cmd_args = explode(" ", $where_clause);
-        foreach ($cmd_args as $argument) {
-            $arglen  = strlen($argument);
-            $cmd    .= "\${$arglen}\r\n{$argument}\r\n";
-        }
-
+        $cmd .= "$" . strlen($where_clause) . "\r\n" . $where_clause . "\r\n";
         return $this->localRawCommand($cmd);
     }
 
     public function scanSelect($column_list, $table_name, $where_clause) {
         if (!isset($column_list, $table_name, $where_clause)) {
-            throw new Predis_ClientException("scanSelect(\"col1,col2,etc...\",".
+            throw new Predis\ClientException("scanSelect(\"col1,col2,etc...\",".
                                              "\"tablename\",\"name = bill\")");
         }
-        $redisql_cmd = "SCANSELECT $column_list FROM $table_name " .
-                       "WHERE $where_clause\r\n";
-        return $this->localRawCommand($redisql_cmd);
+        $cmd  = "*6";
+        $cmd .= "$10\r\nSCANSELECT\r\n";
+        $cmd .= "$" . strlen($column_list)  . "\r\n" . $column_list . "\r\n";
+        $cmd .= "$4\r\nFROM\r\n";
+        $cmd .= "$" . strlen($table_name)   . "\r\n" . $table_name . "\r\n";
+        $cmd .= "$5\r\nWHERE\r\n";
+        $cmd .= "$" . strlen($where_clause) . "\r\n" . $where_clause . "\r\n";
+        return $this->localRawCommand($cmd);
     }
 
     public function select($column_list, $table_name, $where_clause) {
-        $this->_select($column_list, $table_name, $where_clause, "", "");
+        return $this->_select($column_list, $table_name, $where_clause);
     }
 
     public function selectStore($column_list,
@@ -148,13 +148,13 @@ class Predisql_Client extends Predis\Client {
                                 $where_clause,
                                 $redis_command,
                                 $redis_name) {
-        $this->_select($column_list, $table_name, $where_clause,
-                       $redis_command, $redis_name);
+        $where_clause .= " STORE " . $redis_command . " " . $redis_name;
+        return $this->_select($column_list, $table_name, $where_clause);
     }
 
     public function desc($table_name) {
         if (!isset($table_name)) {
-            throw new Predis_ClientException("desc(\"tablename\")");
+            throw new Predis\ClientException("desc(\"tablename\")");
         }
         $redisql_cmd  = "DESC $table_name\r\n";
         return $this->localRawCommand($redisql_cmd);
@@ -162,7 +162,7 @@ class Predisql_Client extends Predis\Client {
 
     public function dump($table_name) {
         if (!isset($table_name)) {
-            throw new Predis_ClientException("dump(\"tablename\",0)");
+            throw new Predis\ClientException("dump(\"tablename\",0)");
         }
         $redisql_cmd = "DUMP $table_name\r\n";
         return $this->localRawCommand($redisql_cmd);
@@ -170,7 +170,7 @@ class Predisql_Client extends Predis\Client {
 
     public function dumpToMysql($table_name, $mysql_table_name) {
         if (!isset($table_name, $mysql_table_name)) {
-            throw new Predis_ClientException("dump(\"tablename\",0)");
+            throw new Predis\ClientException("dump(\"tablename\",0)");
         }
         $redisql_cmd  = "DUMP $table_name TO MYSQL $mysql_table_name\r\n";
         $mysql_commands = $this->localRawCommand($redisql_cmd);
@@ -183,7 +183,7 @@ class Predisql_Client extends Predis\Client {
 
     public function normalize($main_wildcard, $secondary_wildcard_list) {
         if (!isset($main_wildcard)) {
-            throw new Predis_ClientException("normalize(\"tablename\"," .
+            throw new Predis\ClientException("normalize(\"tablename\"," .
                                              "\"user\",\"address,payment\")");
         }
         $redisql_cmd  = "NORM $main_wildcard $secondary_wildcard_list\r\n";
@@ -192,7 +192,7 @@ class Predisql_Client extends Predis\Client {
 
     public function denormalize($table_name, $main_wildcard) {
         if (!isset($table_name, $main_wildcard)) {
-            throw new Predis_ClientException("denormalize(\"tablename\"," .
+            throw new Predis\ClientException("denormalize(\"tablename\"," .
                                              "\"user:*:payment\")");
         }
         $redisql_cmd  = "DENORM $table_name $main_wildcard\r\n";
@@ -201,7 +201,7 @@ class Predisql_Client extends Predis\Client {
 
     public function lua($command) {
         if (!isset($command)) {
-            throw new Predis_ClientException("lua(\"command\")");
+            throw new Predis\ClientException("lua(\"command\")");
         }
         $redisql_cmd  = "LUA $command\r\n";
         return $this->localRawCommand($redisql_cmd);
@@ -291,69 +291,51 @@ class Predisql_Client extends Predis\Client {
 
     // PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE
     // PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE PRIVATE
-    private $storageCommands;
+    private function _cr8_tbl($table_name, $cdefs) {
+        $cmd    = "*4\r\n";
+        $cmd   .= "$6\r\nCREATE\r\n";
+        $cmd   .= "$5\r\nTABLE\r\n";
+        $cmd   .= "$" . strlen($table_name) . "\r\n" . $table_name . "\r\n";
+        $cmd   .= "$" . strlen($cdefs)      . "\r\n" . $cdefs . "\r\n";
+        return $this->localRawCommand($cmd);
+    }
 
     private function _insert($table_name, $values_list, $return_size) {
         if (!isset($table_name, $values_list)) {
-            throw new Predis_ClientException("insertRow(\"indexname\"," .
+            throw new Predis\ClientException("insertRow(\"indexname\"," .
                                              "\"1,bill,27,etc...\")");
         }
         $num_args = 5;
         if ($return_size == 1) {
             $num_args = 7;
         }
-        $cmd  = "*" . $num_args . "\r\n$6\r\nINSERT\r\n$4\r\nINTO\r\n";
-        $cmd .= "$" . strlen($table_name) . "\r\n";
-        $cmd .= $table_name . "\r\n";
+        $cmd  = "*" . $num_args . "\r\n";
+        $cmd .= "$6\r\nINSERT\r\n";
+        $cmd .= "$4\r\nINTO\r\n";
+        $cmd .= "$" . strlen($table_name)  . "\r\n" . $table_name . "\r\n";
         $cmd .= "$6\r\nVALUES\r\n";
-        $cmd .= "$" . strlen($values_list) . "\r\n";
-        $cmd .= $values_list . "\r\n";
-
+        $cmd .= "$" . strlen($values_list) . "\r\n" . $values_list . "\r\n";
         if ($return_size == 1) {
-            $cmd .= "$6\r\nRETURN\r\n$4\r\nSIZE\r\n";
+            $cmd .= "$6\r\nRETURN\r\n";
+            $cmd .= "$4\r\nSIZE\r\n";
         }
         return $this->localRawCommand($cmd);
     }
 
-    private function _select($column_list,
-                             $table_name,
-                             $where_clause,
-                             $redis_command,
-                             $redis_name) {
+    private function _select($column_list, $table_name, $where_clause) {
         if (!isset($column_list, $table_name, $where_clause)) {
-            throw new Predis_ClientException("select(\"col1,col2,etc...\"," .
+            throw new Predis\ClientException("select(\"col1,col2,etc...\"," .
                                              "\"tablename\"," .
                                              "\"id = 27\")");
         }
-
-        if (empty($redis_command)) { // normal SELECT
-            $redisql_cmd  = "SELECT $column_list FROM $table_name " .
-                            "WHERE $where_clause\r\n";
-            return $this->localRawCommand($redisql_cmd);
-        } else { // SELECT ... STORE
-            if (!isset($redis_name)) {
-                throw new Predis_ClientException(
-                                  "selectStore(\"col1,col2,etc...\",".
-                                  "\"tablename\",\"name = bill\"," .
-                                  "\"HSET\",\"new_hash_table\")");
-            }
-            // check redisql_cmd against possible write commands
-            if (!in_array($redis_command, $this->storageCommands)) {
-                $adtl_info = "";
-                foreach ($this->storageCommands as $value) {
-                    if (!empty($adtl_info)) $adtl_info .= ", ";
-                    $adtl_info .= $value;
-                }
-                throw new Predis_ClientException(
-                                  "Command: \"$redis_command\" not supported " .
-                                  "try ($adtl_info)");
-            }
-
-            $redisql_cmd  = "SELECT $column_list FROM $table_name " .
-                            "WHERE $where_clause " .
-                            "STORE $redis_command $redis_name\r\n";
-            return $this->localRawCommand($redisql_cmd);
-        }
+        $cmd    = "*6\r\n";
+        $cmd   .= "$6\r\nSELECT\r\n";
+        $cmd   .= "$" . strlen($column_list)  . "\r\n" . $column_list . "\r\n";
+        $cmd   .= "$4\r\nFROM\r\n";
+        $cmd   .= "$" . strlen($table_name)   . "\r\n" . $table_name . "\r\n";
+        $cmd   .= "$5\r\nWHERE\r\n";
+        $cmd   .= "$" . strlen($where_clause) . "\r\n" . $where_clause . "\r\n";
+        return $this->localRawCommand($cmd);
     }
 
     private function localRawCommand($redisql_cmd) {
@@ -368,12 +350,6 @@ class Predisql_Client extends Predis\Client {
         } else {
             return $this->rawCommand($redisql_cmd);
         }
-    }
-
-    private function initStorageCommands() {
-        $this->storageCommands = array( "LPUSH", "RPUSH",  "LSET",   "SADD",
-                                        "ZADD",  "HSET",   "INSERT", "SET",
-                                        "SETNX", "APPEND", "SETEX");
     }
 
     private $mysql_db;
